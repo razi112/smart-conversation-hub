@@ -14,6 +14,7 @@ const Index = () => {
     createConversation,
     deleteConversation,
     renameConversation,
+    togglePinConversation,
     refreshConversations,
   } = useConversations();
 
@@ -65,6 +66,7 @@ const Index = () => {
         onNew={handleNewChat}
         onDelete={handleDeleteConversation}
         onRename={renameConversation}
+        onTogglePin={togglePinConversation}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 

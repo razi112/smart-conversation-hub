@@ -5,6 +5,7 @@ export interface Conversation {
   id: string;
   title: string;
   updated_at: string;
+  pinned: boolean;
 }
 
 export const useConversations = () => {
@@ -14,7 +15,8 @@ export const useConversations = () => {
   const loadConversations = useCallback(async () => {
     const { data, error } = await supabase
       .from("conversations")
-      .select("id, title, updated_at")
+      .select("id, title, updated_at, pinned")
+      .order("pinned", { ascending: false })
       .order("updated_at", { ascending: false });
 
     if (!error && data) {
@@ -59,6 +61,30 @@ export const useConversations = () => {
     }
   }, []);
 
+  const togglePinConversation = useCallback(async (id: string) => {
+    const conv = conversations.find((c) => c.id === id);
+    if (!conv) return;
+
+    const newPinned = !conv.pinned;
+    const { error } = await supabase
+      .from("conversations")
+      .update({ pinned: newPinned })
+      .eq("id", id);
+
+    if (!error) {
+      setConversations((prev) => {
+        const updated = prev.map((c) =>
+          c.id === id ? { ...c, pinned: newPinned } : c
+        );
+        // Re-sort: pinned first, then by updated_at
+        return updated.sort((a, b) => {
+          if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        });
+      });
+    }
+  }, [conversations]);
+
   const refreshConversations = useCallback(() => {
     loadConversations();
   }, [loadConversations]);
@@ -69,6 +95,7 @@ export const useConversations = () => {
     createConversation,
     deleteConversation,
     renameConversation,
+    togglePinConversation,
     refreshConversations,
   };
 };
