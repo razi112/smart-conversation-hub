@@ -10,26 +10,29 @@ interface ChatMessageProps {
 
 const TypingText = ({ content }: { content: string }) => {
   const [displayedContent, setDisplayedContent] = useState("");
-  const contentRef = useRef(content);
   const indexRef = useRef(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // If content changed and is longer, continue from where we were
-    if (content !== contentRef.current) {
-      contentRef.current = content;
-    }
-
     const animateText = () => {
       if (indexRef.current < content.length) {
-        // Add multiple characters per frame for smoother feel
-        const charsToAdd = Math.min(3, content.length - indexRef.current);
-        indexRef.current += charsToAdd;
+        indexRef.current += 1;
         setDisplayedContent(content.slice(0, indexRef.current));
-        requestAnimationFrame(animateText);
+        // Slower typing: 20ms delay per character for dramatic effect
+        timeoutRef.current = setTimeout(animateText, 20);
       }
     };
 
-    requestAnimationFrame(animateText);
+    // Start animation
+    if (indexRef.current < content.length) {
+      timeoutRef.current = setTimeout(animateText, 20);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [content]);
 
   return (
