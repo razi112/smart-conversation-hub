@@ -1,8 +1,14 @@
 import { useState } from "react";
-import { Plus, MessageSquare, Trash2, PanelLeftClose, PanelLeft, Pencil, Check, X } from "lucide-react";
+import { Plus, MessageSquare, Trash2, PanelLeftClose, PanelLeft, Pencil, Check, X, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Conversation } from "@/hooks/useConversations";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -31,8 +37,7 @@ export const ChatSidebar = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
-  const startEditing = (conv: Conversation, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const startEditing = (conv: Conversation) => {
     setEditingId(conv.id);
     setEditTitle(conv.title);
   };
@@ -127,17 +132,35 @@ export const ChatSidebar = ({
                   <MessageSquare className="h-4 w-4 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     {editingId === conv.id ? (
-                      <Input
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") saveEdit(e as unknown as React.MouseEvent);
-                          if (e.key === "Escape") cancelEdit(e as unknown as React.MouseEvent);
-                        }}
-                        className="h-6 text-sm py-0 px-1 bg-background"
-                        autoFocus
-                      />
+                      <div className="flex items-center gap-1">
+                        <Input
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEdit(e as unknown as React.MouseEvent);
+                            if (e.key === "Escape") cancelEdit(e as unknown as React.MouseEvent);
+                          }}
+                          className="h-6 text-sm py-0 px-1 bg-background"
+                          autoFocus
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={saveEdit}
+                          className="h-6 w-6 text-primary hover:text-primary flex-shrink-0"
+                        >
+                          <Check className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={cancelEdit}
+                          className="h-6 w-6 text-muted-foreground hover:text-foreground flex-shrink-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
                     ) : (
                       <>
                         <p className="text-sm truncate">{conv.title}</p>
@@ -149,50 +172,41 @@ export const ChatSidebar = ({
                       </>
                     )}
                   </div>
-                  <div className="flex items-center gap-0.5">
-                    {editingId === conv.id ? (
-                      <>
+                  {editingId !== conv.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={saveEdit}
-                          className="h-6 w-6 text-primary hover:text-primary"
-                        >
-                          <Check className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={cancelEdit}
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => startEditing(conv, e)}
                           className="h-6 w-6 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground"
                         >
-                          <Pencil className="h-3 w-3" />
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40 bg-popover border-border">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEditing(conv);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
                           onClick={(e) => {
                             e.stopPropagation();
                             onDelete(conv.id);
                           }}
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                          className="cursor-pointer text-destructive focus:text-destructive"
                         >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               ))
             )}
