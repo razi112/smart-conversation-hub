@@ -32,30 +32,20 @@ export const ChatContainer = ({
   }, [messages, isLoading]);
 
   return (
-    <div className="flex flex-col h-full glass-panel rounded-2xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-border/50 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-primary" />
-        </div>
-        <div>
-          <h3 className="text-sm font-medium text-foreground">NexusAI</h3>
-          <p className="text-xs text-muted-foreground">Always here to help</p>
-        </div>
-      </div>
-
-      <ScrollArea ref={scrollRef} className="flex-1 px-5 py-4">
-        <div className="space-y-4">
+    <div className="flex flex-col h-full bg-background">
+      <ScrollArea ref={scrollRef} className="flex-1 px-6 py-6">
+        <div className="max-w-3xl mx-auto space-y-4">
           {messages.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-primary" />
+            <div className="text-center py-20">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                <Sparkles className="w-10 h-10 text-primary" />
               </div>
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                Start a conversation
+              <h3 className="text-2xl font-semibold text-foreground mb-3">
+                How can I help you today?
               </h3>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                Ask me anything! I'm here to help with questions, creative tasks,
-                analysis, and more.
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Ask me anything — I'm here to assist with questions, creative tasks,
+                analysis, coding, and more.
               </p>
             </div>
           )}
@@ -75,8 +65,10 @@ export const ChatContainer = ({
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t border-border/50">
-        <ChatInput onSend={onSend} isLoading={isLoading} />
+      <div className="border-t border-border p-4 flex-shrink-0">
+        <div className="max-w-3xl mx-auto">
+          <ChatInput onSend={onSend} isLoading={isLoading} />
+        </div>
       </div>
     </div>
   );

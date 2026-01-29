@@ -6,9 +6,9 @@ const Index = () => {
   const { messages, isLoading, isStreaming, sendMessage } = useChat();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="h-16 border-b border-border flex items-center px-6">
+      <header className="h-14 border-b border-border flex items-center px-6 flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-primary-foreground" />
@@ -17,16 +17,14 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Chat area - full remaining height */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4">
-        <div className="h-full">
-          <ChatContainer
-            messages={messages}
-            isLoading={isLoading}
-            isStreaming={isStreaming}
-            onSend={sendMessage}
-          />
-        </div>
+      {/* Chat area - fills remaining space */}
+      <main className="flex-1 min-h-0">
+        <ChatContainer
+          messages={messages}
+          isLoading={isLoading}
+          isStreaming={isStreaming}
+          onSend={sendMessage}
+        />
       </main>
     </div>
   );
