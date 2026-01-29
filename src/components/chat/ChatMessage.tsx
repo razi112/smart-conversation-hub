@@ -1,11 +1,44 @@
 import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useEffect, useState, useRef } from "react";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
   content: string;
   isStreaming?: boolean;
 }
+
+const TypingText = ({ content }: { content: string }) => {
+  const [displayedContent, setDisplayedContent] = useState("");
+  const contentRef = useRef(content);
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    // If content changed and is longer, continue from where we were
+    if (content !== contentRef.current) {
+      contentRef.current = content;
+    }
+
+    const animateText = () => {
+      if (indexRef.current < content.length) {
+        // Add multiple characters per frame for smoother feel
+        const charsToAdd = Math.min(3, content.length - indexRef.current);
+        indexRef.current += charsToAdd;
+        setDisplayedContent(content.slice(0, indexRef.current));
+        requestAnimationFrame(animateText);
+      }
+    };
+
+    requestAnimationFrame(animateText);
+  }, [content]);
+
+  return (
+    <div className="prose prose-invert prose-sm max-w-none">
+      <ReactMarkdown>{displayedContent}</ReactMarkdown>
+      <span className="inline-block w-0.5 h-4 ml-0.5 bg-primary animate-pulse" />
+    </div>
+  );
+};
 
 export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) => {
   const isAI = role === "assistant";
@@ -27,12 +60,13 @@ export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) =>
         }`}
       >
         {isAI ? (
-          <div className="prose prose-invert prose-sm max-w-none">
-            <ReactMarkdown>{content}</ReactMarkdown>
-            {isStreaming && (
-              <span className="inline-block w-2 h-4 ml-1 bg-primary/60 animate-pulse" />
-            )}
-          </div>
+          isStreaming ? (
+            <TypingText content={content} />
+          ) : (
+            <div className="prose prose-invert prose-sm max-w-none">
+              <ReactMarkdown>{content}</ReactMarkdown>
+            </div>
+          )
         ) : (
           <p className="text-foreground text-sm">{content}</p>
         )}
