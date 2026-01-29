@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, MessageSquare, Trash2, PanelLeftClose, PanelLeft, Pencil, Check, X, MoreVertical } from "lucide-react";
+import { Plus, MessageSquare, Trash2, PanelLeftClose, PanelLeft, Pencil, Check, X, MoreVertical, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ interface ChatSidebarProps {
   onNew: () => void;
   onDelete: (id: string) => void;
   onRename: (id: string, newTitle: string) => void;
+  onTogglePin: (id: string) => void;
   onToggle: () => void;
 }
 
@@ -32,6 +33,7 @@ export const ChatSidebar = ({
   onNew,
   onDelete,
   onRename,
+  onTogglePin,
   onToggle,
 }: ChatSidebarProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -129,7 +131,12 @@ export const ChatSidebar = ({
                   )}
                   onClick={() => onSelect(conv.id)}
                 >
-                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
+                  <div className="relative flex-shrink-0">
+                    <MessageSquare className="h-4 w-4" />
+                    {conv.pinned && (
+                      <Pin className="h-2.5 w-2.5 absolute -top-1 -right-1 text-primary" />
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     {editingId === conv.id ? (
                       <div className="flex items-center gap-1">
@@ -184,6 +191,25 @@ export const ChatSidebar = ({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40 bg-popover border-border">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTogglePin(conv.id);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          {conv.pinned ? (
+                            <>
+                              <PinOff className="h-4 w-4 mr-2" />
+                              Unpin
+                            </>
+                          ) : (
+                            <>
+                              <Pin className="h-4 w-4 mr-2" />
+                              Pin Chat
+                            </>
+                          )}
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={(e) => {
                             e.stopPropagation();
