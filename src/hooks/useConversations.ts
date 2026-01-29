@@ -46,6 +46,19 @@ export const useConversations = () => {
     setConversations((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
+  const renameConversation = useCallback(async (id: string, newTitle: string) => {
+    const { error } = await supabase
+      .from("conversations")
+      .update({ title: newTitle })
+      .eq("id", id);
+
+    if (!error) {
+      setConversations((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, title: newTitle } : c))
+      );
+    }
+  }, []);
+
   const refreshConversations = useCallback(() => {
     loadConversations();
   }, [loadConversations]);
@@ -55,6 +68,7 @@ export const useConversations = () => {
     isLoading,
     createConversation,
     deleteConversation,
+    renameConversation,
     refreshConversations,
   };
 };

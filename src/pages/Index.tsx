@@ -13,6 +13,7 @@ const Index = () => {
     conversations,
     createConversation,
     deleteConversation,
+    renameConversation,
     refreshConversations,
   } = useConversations();
 
@@ -29,14 +30,6 @@ const Index = () => {
       }
     } else {
       sendMessage(input);
-    }
-  };
-
-  // Handle new conversation with message
-  const handleSendWithNewConversation = async (input: string) => {
-    const newId = await createConversation();
-    if (newId) {
-      setCurrentConversationId(newId);
     }
   };
 
@@ -71,6 +64,7 @@ const Index = () => {
         onSelect={setCurrentConversationId}
         onNew={handleNewChat}
         onDelete={handleDeleteConversation}
+        onRename={renameConversation}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
