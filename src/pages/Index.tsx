@@ -1,42 +1,25 @@
-import { useRef } from "react";
-import { Header } from "@/components/Header";
-import { Hero } from "@/components/Hero";
 import { ChatContainer } from "@/components/chat/ChatContainer";
 import { useChat } from "@/hooks/useChat";
+import { Sparkles } from "lucide-react";
 
 const Index = () => {
-  const chatRef = useRef<HTMLDivElement>(null);
   const { messages, isLoading, isStreaming, sendMessage } = useChat();
 
-  const scrollToChat = () => {
-    chatRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      {/* Hero Section */}
-      <section className="pt-16">
-        <Hero onGetStarted={scrollToChat} />
-      </section>
-
-      {/* Chat Demo Section */}
-      <section
-        id="demo"
-        ref={chatRef}
-        className="max-w-3xl mx-auto px-6 py-20"
-      >
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-            Try it yourself
-          </h2>
-          <p className="text-muted-foreground">
-            Start a conversation with NexusAI right now
-          </p>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <header className="h-16 border-b border-border flex items-center px-6">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-primary-foreground" />
+          </div>
+          <span className="font-semibold text-lg text-foreground">NexusAI</span>
         </div>
+      </header>
 
-        <div className="h-[600px]">
+      {/* Chat area - full remaining height */}
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4">
+        <div className="h-full">
           <ChatContainer
             messages={messages}
             isLoading={isLoading}
@@ -44,14 +27,7 @@ const Index = () => {
             onSend={sendMessage}
           />
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="max-w-6xl mx-auto px-6 text-center text-sm text-muted-foreground">
-          <p>© 2025 NexusAI. Built with advanced language models.</p>
-        </div>
-      </footer>
+      </main>
     </div>
   );
 };
